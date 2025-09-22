@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "pomodoro-tracker"
+version = "0.1.0"
+description = ""
+authors = ["Artem Lobzov <psychodiss@gmail.com>"]
+readme = "README.md"
+packages = [
+    {include = "src", from = "."},
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["standard"], version = "^0.117.1"}
+
+
+[tool.poetry.group.dev.dependencies]
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
