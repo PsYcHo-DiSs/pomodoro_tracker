@@ -5,16 +5,15 @@ description = ""
 authors = ["Artem Lobzov <psychodiss@gmail.com>"]
 readme = "README.md"
 packages = [
-    {include = "src", from = "."},
+    { include = "src", from = "." },
 ]
 
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = {extras = ["standard"], version = "^0.117.1"}
+fastapi = { extras = ["standard"], version = "^0.117.1" }
+pydantic = "^2.11.9"
 
-
-[tool.poetry.group.dev.dependencies]
 
 
 [build-system]
