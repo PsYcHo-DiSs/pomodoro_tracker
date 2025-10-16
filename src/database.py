@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import sessionmaker
-from timer import get_settings
+from .timer import get_settings
 
 settings = get_settings()
 engine = create_async_engine(settings.DATABASE_URL, echo=True)
