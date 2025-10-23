@@ -5,7 +5,10 @@ class Task(BaseModel):
     id: int
     name: str | None = None
     pomodoro_count: int | None = None
-    category_id: int = Field(exclude=True)
+    category_id: int
+
+    class Config:
+        from_attributes = True
 
     @model_validator(mode="after")
     def is_not_none_check(self, value):

@@ -1,21 +1,36 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, HTTPException
+from fastapi.params import Depends
+
 from src.fixtures import tasks as fixtures_tasks
 from src.timer.schemas import Task
+
+from src.timer.services import TaskService
+
+from src.timer.dependencies import get_task_repo, get_task_service
 
 router = APIRouter(prefix="/task", tags=["task"])
 
 
 @router.get("/all",
             response_model=list[Task])
-async def get_tasks():
-    return fixtures_tasks
+async def get_tasks(
+        service: TaskService = Depends(get_task_service)
+):
+
+    return await service.get_all_tasks()
 
 
 @router.post("/",
              response_model=Task)
-async def create_task(task: Task):
-    fixtures_tasks.append(task)
-    return task
+async def create_task(
+        task: Task,
+        service: TaskService = Depends(get_task_service)
+):
+    try:
+        task = await service.create_task(task.model_dump())
+        return task
+    except ValueError as e:
+        raise HTTPException(400, str(e))
 
 
 @router.patch("/{task_id}",
