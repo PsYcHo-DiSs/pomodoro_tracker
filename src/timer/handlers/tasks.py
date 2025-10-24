@@ -20,12 +20,29 @@ async def get_tasks(
     return await service.get_all_tasks()
 
 
+@router.get("/{task_id}",
+            response_model=Task)
+async def get_task_by_id(
+        task_id: int,
+        service: TaskService = Depends(get_task_service)
+):
+    """получение задачи по id"""
+
+    try:
+        task = await service.get_task(task_id)
+        return task
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+
 @router.post("/",
              response_model=Task)
 async def create_task(
         task: Task,
         service: TaskService = Depends(get_task_service)
 ):
+    """создание задачи"""
     try:
         task = await service.create_task(task.model_dump())
         return task
@@ -36,6 +53,7 @@ async def create_task(
 @router.patch("/{task_id}",
               response_model=Task)
 async def patch_task(task_id: int, name: str):
+    """обновление названия задачи"""
     patched_task = None
     for task in fixtures_tasks:
         if task.id == task_id:
@@ -48,6 +66,8 @@ async def patch_task(task_id: int, name: str):
 @router.delete("/{task_id}",
                status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task(task_id: int):
+    """удаление задачи по Id"""
+    #TODO through repository + shit
     for index, task in enumerate(fixtures_tasks):
         if task.id == task_id:
             fixtures_tasks.pop(index)
