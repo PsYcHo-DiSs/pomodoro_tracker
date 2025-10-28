@@ -1,6 +1,9 @@
-from sqlalchemy import select
+from typing import Any, Coroutine, Sequence
+
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.timer.models import Task
+
 
 class TaskRepository:
 
@@ -21,9 +24,21 @@ class TaskRepository:
         result = await self.db_session.execute(query)
         return result.scalar_one_or_none()
 
-    async def find_all(self) -> list[Task]:
+    async def delete_task_by_id(self, task_id: int) -> Task | None:
+        """удаление записи по id"""
+        task = await self.find_by_id(task_id)
+
+        if task:
+            await self.db_session.delete(task)
+            await self.db_session.commit()
+
+        return task
+
+    #TODO async def delete_and_return(self, task_id: int) -> Task | None:
+
+
+    async def find_all(self) -> Sequence[Task]:
         """получение всех задач"""
         stmt = select(Task)
         result = await self.db_session.execute(stmt)
         return result.scalars().all()
-

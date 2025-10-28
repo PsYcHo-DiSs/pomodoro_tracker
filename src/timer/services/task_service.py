@@ -2,6 +2,12 @@ from src.timer.repositories import TaskRepository
 from src.timer.models import Task
 
 
+class TaskNotFoundError(Exception): pass
+
+
+class TaskValidationError(Exception): pass
+
+
 class TaskService:
     def __init__(self, repo: TaskRepository):
         self.repo = repo
@@ -10,7 +16,7 @@ class TaskService:
         """сервис метод для создания задачи"""
         # Валидация бизнес-правил
         if len(task_data["name"]) < 3:
-            raise ValueError("Task name too short")
+            raise TaskValidationError("Task name too short")
 
         # Сохранение
         return await self.repo.persist(task_data)
@@ -19,6 +25,16 @@ class TaskService:
         """сервис метод для возвращения всех задач"""
         return await self.repo.find_all()
 
+    async def delete_task(self, task_id):
+        """сервис метод для удаления задачи по id"""
+        task = await self.repo.delete_task_by_id(task_id)
+        if not task:
+            raise TaskNotFoundError(f"Task with id {task_id} not found")
+        return task
+
     async def get_task(self, task_id: int):
         """сервис метод для возвращения задачи по id"""
-        return await self.repo.find_by_id(task_id)
+        task = await self.repo.find_by_id(task_id)
+        if not task:
+            raise TaskNotFoundError(f"Task {task_id} not found")
+        return task
