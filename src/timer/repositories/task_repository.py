@@ -24,6 +24,16 @@ class TaskRepository:
         result = await self.db_session.execute(query)
         return result.scalar_one_or_none()
 
+    async def patch_name_by_id(self, task_id: int, name: str) -> Task | None:
+        """обновление названия задачи по id"""
+        task = await self.find_by_id(task_id)
+
+        if task:
+            task.name = name
+            await self.db_session.commit()
+
+        return task
+
     async def delete_task_by_id(self, task_id: int) -> Task | None:
         """удаление записи по id"""
         task = await self.find_by_id(task_id)
@@ -34,8 +44,7 @@ class TaskRepository:
 
         return task
 
-    #TODO async def delete_and_return(self, task_id: int) -> Task | None:
-
+    # TODO async def delete_and_return(self, task_id: int) -> Task | None:
 
     async def find_all(self) -> Sequence[Task]:
         """получение всех задач"""
