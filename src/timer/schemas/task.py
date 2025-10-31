@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, ConfigDict
 
 
 class Task(BaseModel):
@@ -7,8 +7,7 @@ class Task(BaseModel):
     pomodoro_count: int | None = None
     category_id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
     @model_validator(mode="after")
     def is_not_none_check(self, value):
@@ -16,4 +15,20 @@ class Task(BaseModel):
             raise ValueError("name or pomodoro_count must be provided")
         return self
 
+
+class TaskUpdate(BaseModel):
+    name: str | None = Field(
+        None,
+        description="Название задачи. Опциональное поле."
+    )
+    pomodoro_count: int | None = Field(
+        None,
+        description="Количество помодоро. Опциональное поле."
+    )
+    category_id: int | None = Field(
+        None,
+        description="ID категории. Опциональное поле."
+    )
+
+    model_config = ConfigDict(from_attributes=True)
 

@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, HTTPException
 from fastapi.params import Depends
 
 from src.fixtures import tasks as fixtures_tasks
-from src.timer.schemas import Task
+from src.timer.schemas import Task, TaskUpdate
 
 from src.timer.services import (TaskService,
                                 TaskNotFoundError,
@@ -42,8 +42,7 @@ async def create_task(
         task: Task,
         service: TaskService = Depends(get_task_service)
 ):
-
-    #TODO поменять Task на TaskCreate в качестве DTO в schemas.py
+    # TODO поменять Task на TaskCreate в качестве DTO в schemas.py
     """создание задачи"""
     try:
         task = await service.create_task(task.model_dump())
@@ -53,16 +52,22 @@ async def create_task(
 
 
 @router.patch("/{task_id}",
-              response_model=Task)
-async def patch_task(task_id: int, name: str):
-    """обновление названия задачи"""
-    patched_task = None
-    for task in fixtures_tasks:
-        if task.id == task_id:
-            task.name = name
-            patched_task = task
-            break
-    return patched_task
+              response_model=TaskUpdate)
+async def patch_task(
+        task_id: int,
+        data_to_update: TaskUpdate,
+        service: TaskService = Depends(get_task_service)
+):
+    """обновление полей задачи"""
+    try:
+        update_dict = data_to_update.model_dump(exclude_unset=True)
+        if not update_dict:
+            raise HTTPException(400, detail="No fields to update")
+
+        patched_task = await service.update_task(task_id, update_dict)
+        return patched_task
+    except TaskNotFoundError as e:
+        raise HTTPException(404, detail=str(e))
 
 
 @router.delete("/{task_id}",

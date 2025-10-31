@@ -1,2 +1,2 @@
-from .task import Task
+from .task import Task, TaskUpdate
 from .category import Category

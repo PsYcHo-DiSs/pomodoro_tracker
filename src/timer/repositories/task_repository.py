@@ -24,13 +24,21 @@ class TaskRepository:
         result = await self.db_session.execute(query)
         return result.scalar_one_or_none()
 
-    async def patch_name_by_id(self, task_id: int, name: str) -> Task | None:
-        """обновление названия задачи по id"""
+    async def patch_task_by_id(self, task_id: int, update_data: dict) -> Task | None:
+        """обновление задачи по id"""
+        if not update_data:
+            return await self.find_by_id(task_id)
+
         task = await self.find_by_id(task_id)
 
         if task:
-            task.name = name
+            # TODO allowed_fields = {"name", "description", "is_completed"}
+            # TODO if field in allowed_fields and hasattr ->  setattr
+            for attr, val in update_data.items():
+                if hasattr(task, attr):
+                    setattr(task, attr, val)
             await self.db_session.commit()
+            await self.db_session.refresh(task)
 
         return task
 

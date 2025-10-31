@@ -25,11 +25,21 @@ class TaskService:
         """сервис метод для возвращения всех задач"""
         return await self.repo.find_all()
 
+    async def update_task(self, task_id: int, update_data: dict) -> Task | None:
+        """сервис метод для обновления задачи по id"""
+        if "name" in update_data and len(update_data["name"]) < 3:
+            raise TaskValidationError("Task name too short")
+
+        task = await self.repo.patch_task_by_id(task_id, update_data)
+        if not task:
+            raise TaskNotFoundError(f"Task {task_id} was not updated")
+        return task
+
     async def delete_task(self, task_id):
         """сервис метод для удаления задачи по id"""
         task = await self.repo.delete_task_by_id(task_id)
         if not task:
-            raise TaskNotFoundError(f"Task with id {task_id} not found")
+            raise TaskNotFoundError(f"Task with id {task_id} was not deleted")
         return task
 
     async def get_task(self, task_id: int):
