@@ -1,6 +1,12 @@
-from fastapi import APIRouter, status
-from src.fixtures import categories as fixtures_categories
+from fastapi import APIRouter, status, HTTPException
+from fastapi.params import Depends
+
 from src.timer.schemas import Category
+from src.timer.services import (CategoryService,
+                                CategoryValidationError,
+                                CategoryNotFoundError)
+from src.fixtures import categories as fixtures_categories
+from src.timer.dependencies import get_category_repo, get_category_service
 
 router = APIRouter(prefix="/category", tags=["category"])
 
@@ -18,9 +24,17 @@ async def get_categories():
 
 @router.post("/",
              response_model=Category)
-async def create_category(category: Category):
-    fixtures_categories.append(category)
-    return category
+async def create_category(
+        category: Category,
+        service: CategoryService = Depends(get_category_service)
+):
+    """создание категории"""
+    try:
+        category_data = category.model_dump()
+        category = await service.create_category(category_data)
+        return category
+    except CategoryValidationError as e:
+        raise HTTPException(400, str(e))
 
 
 @router.patch("/{category_id}",
