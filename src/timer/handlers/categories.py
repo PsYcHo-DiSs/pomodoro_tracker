@@ -11,15 +11,24 @@ from src.timer.dependencies import get_category_repo, get_category_service
 router = APIRouter(prefix="/category", tags=["category"])
 
 
-# TODO:
-# создать категорию
-# удалить категорию
-# отредактировать категорию
-
 @router.get("/all",
             response_model=list[Category])
 async def get_categories():
     return fixtures_categories
+
+
+@router.get("/{category_id}",
+            response_model=Category)
+async def get_category_by_id(
+        category_id: int,
+        service: CategoryService = Depends(get_category_service)
+):
+    """получение категории по id"""
+    try:
+        category = await service.get_category(category_id)
+        return category
+    except CategoryNotFoundError as e:
+        raise HTTPException(404, str(e))
 
 
 @router.post("/",

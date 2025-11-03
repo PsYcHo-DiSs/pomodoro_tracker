@@ -23,3 +23,10 @@ class CategoryService:
             raise CategoryValidationError("Category name must be at least 2 characters")
 
         return await self.repo.persist(category_data)
+
+    async def get_category(self, category_id: int) -> Category:
+        """сервис метод для возвращения категории по id"""
+        category = await self.repo.find_by_id(category_id)
+        if not category:
+            raise CategoryNotFoundError(f"Category {category_id} not found")
+        return category

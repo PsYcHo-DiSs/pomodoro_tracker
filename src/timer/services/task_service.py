@@ -42,7 +42,7 @@ class TaskService:
             raise TaskNotFoundError(f"Task with id {task_id} was not deleted")
         return task
 
-    async def get_task(self, task_id: int):
+    async def get_task(self, task_id: int) -> Task:
         """сервис метод для возвращения задачи по id"""
         task = await self.repo.find_by_id(task_id)
         if not task:
