@@ -13,8 +13,12 @@ router = APIRouter(prefix="/category", tags=["category"])
 
 @router.get("/all",
             response_model=list[Category])
-async def get_categories():
-    return fixtures_categories
+async def get_categories(
+        service: CategoryService = Depends(get_category_service)
+):
+    """получение всех категорий"""
+    categories = await service.get_all_categories()
+    return categories
 
 
 @router.get("/{category_id}",

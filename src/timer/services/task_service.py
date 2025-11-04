@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from src.timer.repositories import TaskRepository
 from src.timer.models import Task
 
@@ -21,7 +23,7 @@ class TaskService:
         # Сохранение
         return await self.repo.persist(task_data)
 
-    async def get_all_tasks(self):
+    async def get_all_tasks(self) -> Sequence[Task]:
         """сервис метод для возвращения всех задач"""
         return await self.repo.find_all()
 

@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from src.timer.repositories import CategoryRepository
 from src.timer.models import Category
 
@@ -30,3 +32,9 @@ class CategoryService:
         if not category:
             raise CategoryNotFoundError(f"Category {category_id} not found")
         return category
+
+    async def get_all_categories(self) -> Sequence[Category]:
+        """сервис метод для возвращения всех категорий"""
+        categories = await self.repo.find_all()
+        return categories
+

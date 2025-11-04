@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from sqlalchemy import select
@@ -21,3 +23,9 @@ class CategoryRepository:
         query = select(Category).where(Category.id == category_id)
         result = await self.db_session.execute(query)
         return result.scalar_one_or_none()
+
+    async def find_all(self) -> Sequence[Category]:
+        """получение всех категорий"""
+        query = select(Category)
+        result = await self.db_session.execute(query)
+        return result.scalars().all()
