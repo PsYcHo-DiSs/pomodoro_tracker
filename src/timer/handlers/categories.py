@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, HTTPException
 from fastapi.params import Depends
 
-from src.timer.schemas import Category
+from src.timer.schemas import Category, CategoryUpdate
 from src.timer.services import (CategoryService,
                                 CategoryValidationError,
                                 CategoryNotFoundError)
@@ -52,13 +52,21 @@ async def create_category(
 
 @router.patch("/{category_id}",
               response_model=Category)
-async def patch_category(category_id: int, name: str):
-    patched_category = None
-    for cat in fixtures_categories:
-        if cat.id == category_id:
-            cat.name = name
-            patched_category = cat
-    return patched_category
+async def patch_category(
+        category_id: int,
+        data_to_update: CategoryUpdate,
+        service: CategoryService = Depends(get_category_service)
+):
+    """обновление полей категории"""
+    try:
+        update_dict = data_to_update.model_dump(exclude_unset=True)
+        if not update_dict:
+            raise HTTPException(400, detail="No fields to update")
+
+        patched_category = await service.update_category(category_id, update_dict)
+        return patched_category
+    except CategoryNotFoundError as e:
+        raise HTTPException(404, detail=str(e))
 
 
 @router.delete("/{category_id}",

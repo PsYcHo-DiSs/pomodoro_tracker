@@ -38,3 +38,13 @@ class CategoryService:
         categories = await self.repo.find_all()
         return categories
 
+    async def update_category(self, category_id: int, update_data: dict) -> Category | None:
+        """сервис метод для обновления категории по id"""
+        if "name" in update_data and len(update_data["name"]) < 3:
+            raise CategoryValidationError("Category name too short")
+
+        category = await self.repo.patch_category_by_id(category_id, update_data)
+        if not category:
+            raise CategoryNotFoundError(f"Category {category_id} was not updated")
+        return category
+

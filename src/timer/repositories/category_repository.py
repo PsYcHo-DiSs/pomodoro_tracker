@@ -29,3 +29,21 @@ class CategoryRepository:
         query = select(Category)
         result = await self.db_session.execute(query)
         return result.scalars().all()
+
+    async def patch_category_by_id(self, category_id: int, update_data: dict) -> Category | None:
+        """обновление категории по id"""
+        if not update_data:
+            return await self.find_by_id(category_id)
+
+        category = await self.find_by_id(category_id)
+
+        if category:
+            # TODO allowed_fields = {"name"}
+            # TODO if field in allowed_fields and hasattr ->  setattr
+            for attr, val in update_data.items():
+                if hasattr(category, attr):
+                    setattr(category, attr, val)
+            await self.db_session.commit()
+            await self.db_session.refresh(category)
+
+        return category
