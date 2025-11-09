@@ -47,3 +47,14 @@ class CategoryRepository:
             await self.db_session.refresh(category)
 
         return category
+
+    async def delete_category_by_id(self, category_id: int) -> Category | None:
+
+        """удаление категории по id"""
+        category = await self.find_by_id(category_id)
+
+        if category:
+            await self.db_session.delete(category)
+            await self.db_session.commit()
+
+        return category

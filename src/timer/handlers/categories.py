@@ -70,11 +70,14 @@ async def patch_category(
 
 
 @router.delete("/{category_id}",
-               status_code=status.HTTP_204_NO_CONTENT)
-async def delete_category(category_id: int):
-    for index, cat in enumerate(fixtures_categories):
-        if cat.id == category_id:
-            fixtures_categories.pop(index)
-            return {"message": f"category with {category_id} id was deleted"}
-
-    return {"message": "category not found"}
+               response_model=Category)
+async def delete_category(
+        category_id: int,
+        service: CategoryService = Depends(get_category_service)
+):
+    """удаление категории по id"""
+    try:
+        category = await service.delete_category(category_id)
+        return category
+    except CategoryNotFoundError as e:
+        raise HTTPException(404, detail=str(e))

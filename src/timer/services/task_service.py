@@ -37,7 +37,7 @@ class TaskService:
             raise TaskNotFoundError(f"Task {task_id} was not updated")
         return task
 
-    async def delete_task(self, task_id):
+    async def delete_task(self, task_id) -> Task | None:
         """сервис метод для удаления задачи по id"""
         task = await self.repo.delete_task_by_id(task_id)
         if not task:

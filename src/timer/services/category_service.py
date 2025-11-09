@@ -48,3 +48,10 @@ class CategoryService:
             raise CategoryNotFoundError(f"Category {category_id} was not updated")
         return category
 
+    async def delete_category(self, category_id: int) -> Category | None:
+        """сервис метод для удаления категории по id"""
+        category = await self.repo.delete_category_by_id(category_id)
+        if not category:
+            raise CategoryNotFoundError(f"Category with id {category_id} was not deleted")
+
+        return  category
