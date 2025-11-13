@@ -59,3 +59,20 @@ class TaskRepository:
         stmt = select(Task)
         result = await self.db_session.execute(stmt)
         return result.scalars().all()
+
+    async def delete_all_tasks(self) -> int:
+        """удаление всех задач"""
+        stmt = delete(Task)
+        result = await self.db_session.execute(stmt)
+        await self.db_session.commit()
+        return result.rowcount
+
+    async def delete_tasks_in_batch(self, task_ids: list[int]) -> int:
+        """удаление задач по списку ID"""
+        if not task_ids:
+            return 0
+
+        stmt = delete(Task).where(Task.id.in_(task_ids))
+        result = await self.db_session.execute(stmt)
+        await self.db_session.commit()
+        return result.rowcount
