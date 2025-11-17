@@ -6,6 +6,7 @@ from src.timer.models import Task
 
 class TaskNotFoundError(Exception): pass
 
+class NoTasksToDeleteError(Exception): pass
 
 class TaskValidationError(Exception): pass
 
@@ -50,3 +51,10 @@ class TaskService:
         if not task:
             raise TaskNotFoundError(f"Task {task_id} not found")
         return task
+
+    async def delete_all_tasks(self) -> int:
+        """сервис метод для удаления всех задач"""
+        deleted_count  = await self.repo.delete_all_tasks()
+        if deleted_count == 0:
+            raise NoTasksToDeleteError("No tasks found to delete")
+        return deleted_count

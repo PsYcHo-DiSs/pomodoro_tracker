@@ -5,6 +5,7 @@ from src.fixtures import tasks as fixtures_tasks
 from src.timer.schemas import Task, TaskUpdate
 from src.timer.services import (TaskService,
                                 TaskNotFoundError,
+                                NoTasksToDeleteError,
                                 TaskValidationError)
 from src.timer.dependencies import get_task_repo, get_task_service
 
