@@ -1,1 +1,1 @@
-from .config import get_settings
+from src.timer.config import get_settings

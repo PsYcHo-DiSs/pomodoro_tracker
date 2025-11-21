@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from .timer.handlers import routers as timer_routers
-from .analytics.handlers import routers as analytics_routers
+from src.timer.handlers import routers as timer_routers
+from src.analytics.handlers import routers as analytics_routers
 
 app = FastAPI(title="Pomodoro Tracker")
 
