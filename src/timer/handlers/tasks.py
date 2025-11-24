@@ -2,7 +2,9 @@ from fastapi import APIRouter, status, HTTPException
 from fastapi.params import Depends
 
 from src.fixtures import tasks as fixtures_tasks
-from src.timer.schemas import Task, TaskUpdate
+from src.timer.schemas import (Task,
+                               TaskUpdate,
+                               DeleteAllTasksResponse)
 from src.timer.services import (TaskService,
                                 TaskNotFoundError,
                                 NoTasksToDeleteError,
@@ -80,4 +82,20 @@ async def delete_task(
         task = await service.delete_task(task_id)
         return task
     except TaskNotFoundError as e:
+        raise HTTPException(404, detail=str(e))
+
+
+@router.delete("/all",
+               response_model=DeleteAllTasksResponse)
+async def delete_all_tasks(
+        service: TaskService = Depends(get_task_service)
+):
+    """удаление всех задач"""
+    try:
+        deleted_count = await service.delete_all_tasks()
+        return {
+            "message": f"Successfully deleted {deleted_count} tasks",
+            "deleted_count": deleted_count
+        }
+    except NoTasksToDeleteError as e:
         raise HTTPException(404, detail=str(e))

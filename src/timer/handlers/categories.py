@@ -81,3 +81,7 @@ async def delete_category(
         return category
     except CategoryNotFoundError as e:
         raise HTTPException(404, detail=str(e))
+
+
+# TODO:
+# delete_all_categories handler

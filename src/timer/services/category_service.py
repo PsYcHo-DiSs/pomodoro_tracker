@@ -55,3 +55,6 @@ class CategoryService:
             raise CategoryNotFoundError(f"Category with id {category_id} was not deleted")
 
         return  category
+
+# TODO:
+# delete_all_categories service

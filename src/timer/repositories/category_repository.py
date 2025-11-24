@@ -58,3 +58,6 @@ class CategoryRepository:
             await self.db_session.commit()
 
         return category
+
+# TODO:
+# delete_all_categories repo
