@@ -2,7 +2,7 @@ from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from src.timer.models import Category
 
 
@@ -59,5 +59,11 @@ class CategoryRepository:
 
         return category
 
-# TODO:
-# delete_all_categories repo
+
+    async def delete_all_categories(self) -> int:
+        """удаление всех категорий"""
+        stmt = delete(Category)
+        result = await self.db_session.execute(stmt)
+        await self.db_session.commit()
+        return result.rowcount
+
