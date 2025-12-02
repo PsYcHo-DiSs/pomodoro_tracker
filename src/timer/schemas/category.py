@@ -16,5 +16,6 @@ class CategoryUpdate(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-# TODO:
-# DeleteAllCategoriesResponse model
+class DeleteAllCategoriesResponse(BaseModel):
+    message: str
+    deleted_count: int

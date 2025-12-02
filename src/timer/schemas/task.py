@@ -30,7 +30,6 @@ class TaskUpdate(BaseModel):
         description="ID категории. Опциональное поле."
     )
 
-    model_config = ConfigDict(from_attributes=True)
 
 class DeleteAllTasksResponse(BaseModel):
     message: str

@@ -1,10 +1,17 @@
 from fastapi import APIRouter, status, HTTPException
 from fastapi.params import Depends
 
-from src.timer.schemas import Category, CategoryUpdate
-from src.timer.services import (CategoryService,
-                                CategoryValidationError,
-                                CategoryNotFoundError)
+from src.timer.schemas import (
+    Category,
+    CategoryUpdate,
+    DeleteAllCategoriesResponse
+)
+from src.timer.services import (
+    CategoryService,
+    CategoryValidationError,
+    CategoryNotFoundError,
+    NoCategoriesToDeleteError
+)
 from src.fixtures import categories as fixtures_categories
 from src.timer.dependencies import get_category_repo, get_category_service
 
@@ -83,5 +90,15 @@ async def delete_category(
         raise HTTPException(404, detail=str(e))
 
 
-# TODO:
-# delete_all_categories handler
+@router.delete("/all",
+               response_model=DeleteAllCategoriesResponse)
+async def delete_all_categories(
+        service: CategoryService = Depends(get_category_service)
+):
+    """удаление всех категорий"""
+    deleted_count = await service.delete_all_categories()
+
+    return {
+        "message": f"Deleted {deleted_count} categories",
+        "deleted_count": deleted_count
+    }

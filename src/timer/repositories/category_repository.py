@@ -67,3 +67,14 @@ class CategoryRepository:
         await self.db_session.commit()
         return result.rowcount
 
+    async def delete_categories_in_batch(self, category_ids: list[int]) -> int:
+        """удаление категорий по списку ID"""
+        if not category_ids:
+            return 0
+
+        stm = delete(Category).where(Category.id.in_(category_ids))
+        result = await self.db_session.execute(stm)
+        await self.db_session.commit()
+        return result.rowcount
+
+

@@ -6,7 +6,8 @@ from src.timer.schemas.task import (
 
 from src.timer.schemas.category import (
     Category,
-    CategoryUpdate
+    CategoryUpdate,
+    DeleteAllCategoriesResponse
 )
 
 __all__ = [
@@ -15,5 +16,6 @@ __all__ = [
     "DeleteAllTasksResponse",
 
     "Category",
-    "CategoryUpdate"
+    "CategoryUpdate",
+    "DeleteAllCategoriesResponse"
 ]

@@ -54,7 +54,9 @@ class CategoryService:
         if not category:
             raise CategoryNotFoundError(f"Category with id {category_id} was not deleted")
 
-        return  category
+        return category
 
-# TODO:
-# delete_all_categories service
+    async def delete_all_categories(self) -> int:
+        """сервис метод для удаления всех категорий"""
+        deleted_count = await self.repo.delete_all_categories()
+        return deleted_count
