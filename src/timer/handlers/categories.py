@@ -4,13 +4,14 @@ from fastapi.params import Depends
 from src.timer.schemas import (
     Category,
     CategoryUpdate,
-    DeleteAllCategoriesResponse
+    BatchDeleteCategoriesRequest,
+    DeleteAllCategoriesResponse,
+    BatchDeleteCategoriesResponse
 )
 from src.timer.services import (
     CategoryService,
     CategoryValidationError,
     CategoryNotFoundError,
-    NoCategoriesToDeleteError
 )
 from src.fixtures import categories as fixtures_categories
 from src.timer.dependencies import get_category_repo, get_category_service
@@ -101,4 +102,20 @@ async def delete_all_categories(
     return {
         "message": f"Deleted {deleted_count} categories",
         "deleted_count": deleted_count
+    }
+
+
+@router.delete("/batch",
+               response_model=BatchDeleteCategoriesResponse)
+async def delete_categories_in_batch(
+        request: BatchDeleteCategoriesRequest,
+        service: CategoryService = Depends(get_category_service)
+):
+    """удаление категорий по списку ID"""
+    result = await service.delete_categories_in_batch(request.category_ids)
+
+    return {
+        "message": f"Deleted {result['deleted_count']} of {len(request.category_ids)} categories",
+        "deleted_count": result["deleted_count"],
+        "requested_count": len(request.category_ids)
     }

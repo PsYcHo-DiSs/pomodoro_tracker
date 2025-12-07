@@ -16,6 +16,17 @@ class CategoryUpdate(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class DeleteAllCategoriesResponse(BaseModel):
     message: str
     deleted_count: int
+
+
+class BatchDeleteCategoriesRequest(BaseModel):
+    category_ids: list[int] = Field(..., min_length=1, description="Список ID категорий для удаления")
+
+
+class BatchDeleteCategoriesResponse(BaseModel):
+    message: str
+    deleted_count: int
+    requested_count: int
