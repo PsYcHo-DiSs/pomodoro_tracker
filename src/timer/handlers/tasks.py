@@ -4,7 +4,10 @@ from fastapi.params import Depends
 from src.fixtures import tasks as fixtures_tasks
 from src.timer.schemas import (Task,
                                TaskUpdate,
-                               DeleteAllTasksResponse)
+                               DeleteAllTasksResponse,
+                               BatchDeleteTasksRequest,
+                               BatchDeleteTasksResponse
+                               )
 from src.timer.services import (TaskService,
                                 TaskNotFoundError,
                                 NoTasksToDeleteError,
@@ -99,3 +102,17 @@ async def delete_all_tasks(
         }
     except NoTasksToDeleteError as e:
         raise HTTPException(404, detail=str(e))
+
+
+@router.delete("/batch",
+               response_model=BatchDeleteTasksResponse)
+async def delete_tasks_in_batch(request: BatchDeleteTasksRequest,
+                                service: TaskService = Depends(get_task_service)):
+    """удаление задач по списку ID"""
+    result = await service.delete_tasks_in_batch(request.tasks_ids)
+
+    return {
+        "message": f"Deleted {result['deleted_count']} of {len(request.category_ids)} categories",
+        "deleted_count": result["deleted_count"],
+        "requested_count": len(request.category_ids)
+    }

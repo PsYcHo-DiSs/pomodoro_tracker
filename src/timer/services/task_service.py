@@ -58,3 +58,13 @@ class TaskService:
         if deleted_count == 0:
             raise NoTasksToDeleteError("No tasks found to delete")
         return deleted_count
+
+    async def delete_tasks_in_batch(self, tasks_ids: list[int]) -> dict:
+        """сервис метод для удаления нескольких задач из списка id"""
+        requested_count = len(tasks_ids)
+        deleted_count = await self.repo.delete_tasks_in_batch(tasks_ids)
+        return {
+            "message": f"Deleted {deleted_count} of {requested_count} requested tasks",
+            "deleted_count": deleted_count,
+            "requested_count": requested_count
+        }

@@ -63,9 +63,10 @@ class CategoryService:
 
     async def delete_categories_in_batch(self, category_ids: list[int]) -> dict:
         """сервис метод для удаления нескольких категорий из списка id"""
+        requested_count = len(category_ids)
         deleted_count = await self.repo.delete_categories_in_batch(category_ids)
         return {
-            "message": f"Deleted {deleted_count} of {len(category_ids)} requested categories",
+            "message": f"Deleted {deleted_count} of {requested_count} requested categories",
             "deleted_count": deleted_count,
-            "requested_count": len(category_ids)
+            "requested_count": requested_count
         }

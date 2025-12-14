@@ -35,3 +35,12 @@ class DeleteAllTasksResponse(BaseModel):
     message: str
     deleted_count: int
 
+
+class BatchDeleteTasksRequest(BaseModel):
+    tasks_ids: list[int] = Field(..., min_length=1, description="Список ID задач для удаления")
+
+
+class BatchDeleteTasksResponse(BaseModel):
+    message: str
+    deleted_count: int
+    requested_count: int
