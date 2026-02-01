@@ -3,7 +3,7 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 
 
-from src.timer.models.base import Base
+from src.timer.models import Base
 from src.timer.config import get_settings
 
 config = context.config

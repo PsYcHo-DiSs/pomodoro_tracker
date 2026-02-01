@@ -15,6 +15,12 @@ uninstall: ## Uninstall a dependency using poetry
 	@echo "Uninstalling dependency $(LIBRARY)"
 	poetry remove $(LIBRARY)
 
+migrate-create: ## make migration
+	alembic revision --autogenerate -m $(MIGRATION)
+
+migrate-apply: ## apply migration
+	alembic upgrade head
+
 help: ## Show this help message
 	@echo "Usage: make [command]"
 	@echo ""

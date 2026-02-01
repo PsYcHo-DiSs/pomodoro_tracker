@@ -2,7 +2,7 @@ from typing import Any, Coroutine, Sequence
 
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.timer.models import Task
+from src.timer.models import Task, Category
 
 
 class TaskRepository:
@@ -76,3 +76,9 @@ class TaskRepository:
         result = await self.db_session.execute(stmt)
         await self.db_session.commit()
         return result.rowcount
+
+    async def get_tasks_by_category_name(self, category_name: str) -> Sequence[Task]:
+        """вернуть список задач по имени категории"""
+        query = select(Task).join(Category, Task.category_id == Category.id).where(Category.name == category_name)
+        result = await self.db_session.execute(query)
+        return result.scalars().all()
