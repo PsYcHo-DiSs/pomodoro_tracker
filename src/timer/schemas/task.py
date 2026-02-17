@@ -1,34 +1,48 @@
 from pydantic import BaseModel, Field, model_validator, ConfigDict
 
 
-class Task(BaseModel):
+class TaskCreate(BaseModel):
+    name: str = Field(..., min_length=3, max_length=100)
+    pomodoro_count: int = Field(..., gt=0, le=100)
+    category_id: int = Field(..., gt=0)
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TaskUpdate(BaseModel):
+    name: str | None = Field(None, min_length=3, max_length=100)
+    pomodoro_count: int | None = Field(None, gt=0, le=100)
+    category_id: int | None = Field(None, gt=0)
+
+
+class TaskResponse(BaseModel):
     id: int
-    name: str | None = None
-    pomodoro_count: int | None = None
+    name: str
+    pomodoro_count: int
     category_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
-    @model_validator(mode="after")
-    def is_not_none_check(self, value):
-        if self.name is None or self.pomodoro_count is None:
-            raise ValueError("name or pomodoro_count must be provided")
-        return self
 
+# ----- ДЛЯ КЕША (отдельная схема!) -----
+class TaskCacheSchema(BaseModel):
+    """Схема ТОЛЬКО для кеша - минимальные поля"""
+    id: int
+    name: str
+    pomodoro_count: int
+    category_id: int
 
-class TaskUpdate(BaseModel):
-    name: str | None = Field(
-        None,
-        description="Название задачи. Опциональное поле."
-    )
-    pomodoro_count: int | None = Field(
-        None,
-        description="Количество помодоро. Опциональное поле."
-    )
-    category_id: int | None = Field(
-        None,
-        description="ID категории. Опциональное поле."
-    )
+    model_config = ConfigDict(from_attributes=True)
+
+    # Можно добавить вспомогательные методы
+    def to_redis(self) -> str:
+        """Подготовка для сохранения в Redis"""
+        return self.model_dump_json()
+
+    @classmethod
+    def from_redis(cls, data: str) -> 'TaskCacheSchema':
+        """Восстановление из Redis"""
+        return cls.model_validate_json(data)
 
 
 class DeleteAllTasksResponse(BaseModel):

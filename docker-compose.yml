@@ -4,20 +4,39 @@ services:
     container_name: postgres_container
     restart: always
     environment:
-      POSTGRES_USER: postgres        # Имя пользователя
-      POSTGRES_PASSWORD: 123456 # Пароль
-      POSTGRES_DB: pomodoro_tracker          # Имя базы данных
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: pomodoro_tracker
     ports:
       - "5432:5432"
     networks:
-      - postgres_net
+      - app_net
 
   cache:
     image: redis:alpine
+    container_name: redis_container
     restart: always
     ports:
-      - '6379:6379'
+      - "6379:6379"
+    networks:
+      - app_net
+
+  # app:
+  #   build: .
+  #   container_name: pomodoro_app
+  #   restart: always
+  #   depends_on:
+  #     - db
+  #     - cache
+  #   ports:
+  #     - "8000:8000"
+  #   networks:
+  #     - app_net
+  #   environment:
+  #     REDIS_HOST: cache
+  #     REDIS_PORT: 6379
+  #     DB_HOST: db
 
 networks:
-  postgres_net:
+  app_net:
     driver: bridge

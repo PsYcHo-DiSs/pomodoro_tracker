@@ -2,8 +2,9 @@ from fastapi import APIRouter, status, HTTPException
 from fastapi.params import Depends
 
 from src.fixtures import tasks as fixtures_tasks
-from src.timer.schemas import (Task,
+from src.timer.schemas import (TaskCreate,
                                TaskUpdate,
+                               TaskResponse,
                                DeleteAllTasksResponse,
                                BatchDeleteTasksRequest,
                                BatchDeleteTasksResponse
@@ -18,7 +19,7 @@ router = APIRouter(prefix="/task", tags=["task"])
 
 
 @router.get("/all",
-            response_model=list[Task])
+            response_model=list[TaskCreate])
 async def get_tasks(
         service: TaskService = Depends(get_task_service)
 ):
@@ -26,7 +27,7 @@ async def get_tasks(
 
 
 @router.get("/{task_id}",
-            response_model=Task)
+            response_model=TaskCreate)
 async def get_task_by_id(
         task_id: int,
         service: TaskService = Depends(get_task_service)
@@ -41,12 +42,11 @@ async def get_task_by_id(
 
 
 @router.post("/",
-             response_model=Task)
+             response_model=TaskResponse)
 async def create_task(
-        task: Task,
+        task: TaskCreate,
         service: TaskService = Depends(get_task_service)
 ):
-    # TODO поменять Task на TaskCreate в качестве DTO в schemas.py
     """создание задачи"""
     try:
         task = await service.create_task(task.model_dump())
@@ -75,7 +75,7 @@ async def patch_task(
 
 
 @router.delete("/{task_id}",
-               response_model=Task)
+               response_model=TaskCreate)
 async def delete_task(
         task_id: int,
         service: TaskService = Depends(get_task_service)
